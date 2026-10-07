@@ -1,19 +1,27 @@
 import { Router } from './router.js';
 import { Home } from './pages/home.js';
 import { Products } from './pages/products.js';
+import { Login } from './pages/login.js';
+import { Register } from './pages/register.js';
+import { ProductDetail } from './pages/productDetail.js';
+import { Cart } from './pages/cart.js';
+import { Track } from './pages/track.js';
+import { NotFound } from './pages/notFound.js';
+import { Account } from './pages/account.js';
+import { Admin } from './pages/admin.js';
 // Add more pages here
 
 const routes = [
     { path: '/', render: Home },
     { path: '/products', render: Products },
-    { path: '*', render: () => {
-        document.getElementById('app-root').innerHTML = `
-            <div class="flex flex-col items-center justify-center min-h-[70vh] text-center">
-                <h1 class="text-4xl font-bold mb-4">404 - Página no encontrada</h1>
-                <a href="/" data-link class="text-indigo-400 hover:text-indigo-300">Volver al inicio</a>
-            </div>
-        `;
-    }}
+    { path: /^\/products\/([^/]+)$/, render: ProductDetail },
+    { path: '/login', render: Login },
+    { path: '/register', render: Register },
+    { path: '/cart', render: Cart },
+    { path: '/track', render: Track },
+    { path: '/account', render: Account },
+    { path: '/admin', render: Admin },
+    { path: '*', render: NotFound }
 ];
 
 // Initialize app

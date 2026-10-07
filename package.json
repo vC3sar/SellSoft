@@ -11,11 +11,13 @@
     "@prisma/client": "^5.22.0",
     "@tailwindcss/typography": "^0.5.20",
     "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "date-fns": "^4.4.0",
     "dotenv": "^18.0.6",
     "express": "^4.22.3",
     "express-async-errors": "^3.1.1",
+    "jsonwebtoken": "^9.0.3",
     "mercadopago": "^3.6.1",
     "morgan": "^1.12.1",
     "resend": "^6.32.0"
