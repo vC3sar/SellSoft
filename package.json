@@ -1,0 +1,37 @@
+{
+  "name": "sellsoft-temp",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon --exec tsx src/backend/server.js",
+    "start": "node src/backend/server.js",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "@tailwindcss/typography": "^0.5.20",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "date-fns": "^4.4.0",
+    "dotenv": "^18.0.6",
+    "express": "^4.22.3",
+    "express-async-errors": "^3.1.1",
+    "mercadopago": "^3.6.1",
+    "morgan": "^1.12.1",
+    "resend": "^6.32.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "concurrently": "^10.0.5",
+    "eslint": "^9",
+    "nodemon": "^3.1.14",
+    "prisma": "^5.22.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5"
+  }
+}
