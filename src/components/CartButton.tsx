@@ -19,7 +19,6 @@ export function CartButton() {
 
   useEffect(() => {
     if (mounted && itemCount > prevCount) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setIsBouncing(true);
       const t = setTimeout(() => setIsBouncing(false), 300);
       return () => clearTimeout(t);
