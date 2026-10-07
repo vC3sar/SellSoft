@@ -1,135 +1,83 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id        String     @id @default(cuid())
-  email     String     @unique
-  password  String?
-  name      String?
-  role      String     @default("USER")
-  isBanned  Boolean    @default(false)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  orders    Order[]
-  logs      AuditLog[]
-}
-
-model AuditLog {
-  id        String   @id @default(cuid())
-  userId    String?
-  user      User?    @relation(fields: [userId], references: [id])
-  action    String   // e.g. "LOGIN", "PRODUCT_CREATED", "ORDER_MANUAL_PAID"
-  details   String   // JSON string with more data
-  ipAddress String?
-  createdAt DateTime @default(now())
-}
-
-model Category {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-}
-
-model Product {
-  id               String           @id @default(cuid())
-  name             String
-  slug             String           @unique
-  description      String
-  shortDescription String
-  images           String           // Stored as JSON string
-  imageUrl         String?          // Single general image URL
-  categoryId       String?
-  category         Category?        @relation(fields: [categoryId], references: [id])
-  price            Float
-  type             String
-  status           String           @default("DRAFT")
-  condition        String?          // "NEW", "USED", "RESTORED"
-  isUnique         Boolean          @default(false)
-  digitalFileUrl   String?          // For SOFTWARE type (private url)
-  features         String           // Stored as JSON string
-  variants         ProductVariant[]
-  orders           OrderItem[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-  License          License[]
-}
-
-model ProductVariant {
-  id        String      @id @default(cuid())
-  productId String
-  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
-  name      String
-  duration  Int?        // Optional duration in days for licenses
-  price     Float
-  imageUrl  String?     // Specific image for this variant
-  orders    OrderItem[]
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  License   License[]
-}
-
-model License {
-  id           String        @id @default(cuid())
-  productId    String
-  product      Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
-  variantId    String?
-  variant      ProductVariant? @relation(fields: [variantId], references: [id])
-  licenseKey   String        @unique
-  status       String        @default("AVAILABLE")
-  orderId      String?
-  order        Order?        @relation(fields: [orderId], references: [id])
-  assignedAt   DateTime?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-}
-
-model Order {
-  id              String        @id @default(cuid())
-  userId          String?
-  user            User?         @relation(fields: [userId], references: [id])
-  customerEmail   String
-  customerName    String
-  totalAmount     Float
-  currency        String        @default("ARS")
-  status          String        @default("PENDING")
-  externalRef     String?       @unique // Custom reference ID passed to Mercado Pago
-  preferenceId    String?
-  paymentId       String?       @unique
-  items           OrderItem[]
-  licenses        License[]
-  downloads       Download[]
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-}
-
-model OrderItem {
-  id        String          @id @default(cuid())
-  orderId   String
-  order     Order           @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productId String
-  product   Product         @relation(fields: [productId], references: [id])
-  variantId String?
-  variant   ProductVariant? @relation(fields: [variantId], references: [id])
-  quantity  Int
-  price     Float
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-}
-
-model Download {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  token     String   @unique // Temporary token
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-}
+"generator client {\
+  provider = \"prisma-client-js\"\
+}\
+\
+datasource db {\
+  provider = \"postgresql\"\
+  url      = env(\"DATABASE_URL\")\
+}\
+\
+model User {\
+  id        String   @id @default(cuid())\
+  email     String   @unique\
+  name      String?\
+  role      Role     @default(USER)\
+  createdAt DateTime @default(now())\
+  updatedAt DateTime @updatedAt\
+  orders    Order[]\
+}\
+\
+enum Role {\
+  USER\
+  ADMIN\
+}\
+\
+model Category {\
+  id        String    @id @default(cuid())\
+  name      String    @unique\
+  slug      String    @unique\
+  products  Product[]\
+  createdAt DateTime  @default(now())\
+  updatedAt DateTime  @updatedAt\
+}\
+\
+enum ProductType {\
+  LICENSE\
+  SOFTWARE\
+}\
+\
+model Product {\
+  id               String           @id @default(cuid())\
+  name             String\
+  slug             String           @unique\
+  description      String\
+  shortDescription String\
+  images           String[]\
+  categoryId       String?\
+  category         Category?        @relation(fields: [categoryId], references: [id])\
+  price            Float\
+  type             ProductType\
+  status           ProductStatus    @default(DRAFT)\
+  digitalFileUrl   String?          // For SOFTWARE type (private url)\
+  features         String[]\
+  variants         ProductVariant[]\
+  orders           OrderItem[]\
+  createdAt        DateTime         @default(now())\
+  updatedAt        DateTime         @updatedAt\
+  License          License[]\
+}\
+\
+enum ProductStatus {\
+  DRAFT\
+  ACTIVE\
+  ARCHIVED\
+}\
+\
+model ProductVariant {\
+  id        String      @id @default(cuid())\
+  productId String\
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)\
+  name      String\
+  duration  Int?        // Optional duration in days for licenses\
+  price     Float\
+  orders    OrderItem[]\
+  createdAt DateTime    @default(now())\
+  updatedAt DateTime    @updatedAt\
+  License   License[]\
+}\
+\
+model License {\
+  id           String        @id @default(cuid())\
+  productId    String\
+  product      Produ
+<truncated 2114 bytes>
